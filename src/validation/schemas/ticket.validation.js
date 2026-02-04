@@ -1,0 +1,27 @@
+const Joi = require('joi');
+
+const createTicketTypeSchema = Joi.object({
+  name: Joi.string().min(1).max(200).required(),
+  price: Joi.number().min(0).required(),
+  currency: Joi.string().min(1).max(10).default('EUR'),
+  quantity: Joi.number().integer().min(1).required(),
+});
+
+const purchaseTicketSchema = Joi.object({
+  ticketTypeId: Joi.string().required(),
+  buyerEmail: Joi.string().email().required(),
+  buyerFirstName: Joi.string().min(1).max(100).required(),
+  buyerLastName: Joi.string().min(1).max(100).required(),
+  buyerAddress: Joi.object({
+    street: Joi.string().min(1).max(200).required(),
+    city: Joi.string().min(1).max(100).required(),
+    zip: Joi.string().min(1).max(20).required(),
+    country: Joi.string().min(1).max(100).required(),
+  }).required(),
+});
+
+module.exports = {
+  createTicketTypeSchema,
+  purchaseTicketSchema,
+};
+

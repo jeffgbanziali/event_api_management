@@ -15,10 +15,20 @@ const createEventSchema = Joi.object({
   }).default({}),
 });
 
-const updateEventSchema = createEventSchema.fork(
-  ['name', 'startDate', 'endDate', 'location'],
-  (schema) => schema.optional()
-);
+const updateEventSchema = Joi.object({
+  name: Joi.string().min(1).max(200),
+  description: Joi.string().max(2000).allow('', null),
+  startDate: Joi.date().iso(),
+  endDate: Joi.date().iso(),
+  location: Joi.string().min(1).max(500),
+  coverPhotoUrl: Joi.string().uri().allow('', null),
+  visibility: Joi.string().valid('public', 'private'),
+  settings: Joi.object({
+    shoppingListEnabled: Joi.boolean(),
+    carpoolingEnabled: Joi.boolean(),
+    ticketingEnabled: Joi.boolean(),
+  }),
+}).min(1);
 
 const addParticipantSchema = Joi.object({
   userId: Joi.string().required(),

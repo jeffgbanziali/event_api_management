@@ -28,6 +28,18 @@ class GroupMembershipRepository {
       .populate('user', 'firstName lastName email avatarUrl')
       .exec();
   }
+
+  async updateRole(groupId, userId, role) {
+    return GroupMembershipModel.findOneAndUpdate(
+      { group: groupId, user: userId },
+      { $set: { role } },
+      { new: true }
+    ).exec();
+  }
+
+  async removeMember(groupId, userId) {
+    return GroupMembershipModel.findOneAndDelete({ group: groupId, user: userId }).exec();
+  }
 }
 
 module.exports = new GroupMembershipRepository();

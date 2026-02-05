@@ -3,6 +3,8 @@ const { authMiddleware } = require('../../../middlewares/auth.middleware');
 const {
   requireEventOrganizer,
   requireEventParticipantForPoll,
+  requirePollOrganizer,
+  requireOrganizerByQuestionId,
 } = require('../../../middlewares/authorization.middleware');
 const pollsController = require('../controllers/polls.controller');
 
@@ -29,7 +31,7 @@ router.get(
 router.post(
   '/polls/:pollId/questions',
   authMiddleware,
-  requireEventOrganizer,
+  requirePollOrganizer,
   pollsController.validateCreateQuestion,
   pollsController.addQuestion
 );
@@ -38,7 +40,7 @@ router.post(
 router.post(
   '/questions/:questionId/options',
   authMiddleware,
-  requireEventOrganizer,
+  requireOrganizerByQuestionId,
   pollsController.validateCreateOption,
   pollsController.addOption
 );

@@ -10,19 +10,29 @@ const createGroupSchema = Joi.object({
   allowMembersToCreateEvents: Joi.boolean().default(false),
 });
 
-const updateGroupSchema = createGroupSchema.fork(
-  ['name', 'type'],
-  (schema) => schema.optional()
-);
+const updateGroupSchema = Joi.object({
+  name: Joi.string().min(1).max(200),
+  description: Joi.string().max(1000).allow('', null),
+  icon: Joi.string().uri().allow('', null),
+  coverPhotoUrl: Joi.string().uri().allow('', null),
+  type: Joi.string().valid('public', 'private', 'secret'),
+  allowMembersToPost: Joi.boolean(),
+  allowMembersToCreateEvents: Joi.boolean(),
+}).min(1);
 
 const addGroupMemberSchema = Joi.object({
   userId: Joi.string().required(),
   role: Joi.string().valid('member', 'admin').default('member'),
 });
 
+const promoteAdminSchema = Joi.object({
+  userId: Joi.string().required(),
+});
+
 module.exports = {
   createGroupSchema,
   updateGroupSchema,
   addGroupMemberSchema,
+  promoteAdminSchema,
 };
 

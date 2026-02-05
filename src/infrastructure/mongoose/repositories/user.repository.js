@@ -13,6 +13,10 @@ class UserRepository {
     const user = new UserModel(data);
     return user.save();
   }
+
+  async updateById(id, data) {
+    return UserModel.findByIdAndUpdate(id, { $set: data }, { new: true }).exec();
+  }
 }
 
 module.exports = new UserRepository();

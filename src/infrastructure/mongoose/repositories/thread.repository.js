@@ -14,6 +14,19 @@ class ThreadRepository {
     return ThreadModel.find({ event: eventId }).exec();
   }
 
+  async createForGroup({ groupId, title, createdBy }) {
+    const thread = new ThreadModel({
+      group: groupId,
+      title,
+      createdBy,
+    });
+    return thread.save();
+  }
+
+  async listForGroup(groupId) {
+    return ThreadModel.find({ group: groupId }).exec();
+  }
+
   async findById(id) {
     return ThreadModel.findById(id).exec();
   }

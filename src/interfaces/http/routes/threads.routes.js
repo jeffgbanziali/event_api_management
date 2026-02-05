@@ -1,86 +1,50 @@
 const express = require('express');
 const { authMiddleware } = require('../../../middlewares/auth.middleware');
-const { validate } = require('../../../validation/middlewares/validate.middleware');
-const {
-  createThreadSchema,
-  createMessageSchema,
-} = require('../../../validation/schemas/thread.validation');
-const { createEventThread } = require('../../../application/use-cases/threads/create-event-thread.usecase');
-const { postMessage } = require('../../../application/use-cases/threads/post-message.usecase');
-const threadRepository = require('../../../infrastructure/mongoose/repositories/thread.repository');
-const messageRepository = require('../../../infrastructure/mongoose/repositories/message.repository');
-const { requireEventParticipant } = require('../../../middlewares/authorization.middleware');
+const { requireEventParticipant, requireGroupMember, requireThreadAccess } = require('../../../middlewares/authorization.middleware');
+const threadsController = require('../controllers/threads.controller');
 
 const router = express.Router();
 
-// Créer un fil de discussion pour un événement
 router.post(
   '/events/:eventId/threads',
   authMiddleware,
   requireEventParticipant,
-  validate(createThreadSchema),
-  async (req, res, next) => {
-    try {
-      const thread = await createEventThread(
-        {
-          eventId: req.params.eventId,
-          title: req.body.title,
-        },
-        req.user.id
-      );
-      res.status(201).json(thread);
-    } catch (err) {
-      next(err);
-    }
-  }
+  threadsController.validateCreateThread,
+  threadsController.createEventThreadHandler
 );
-
-// Lister les fils de discussion d'un événement
 router.get(
   '/events/:eventId/threads',
   authMiddleware,
   requireEventParticipant,
-  async (req, res, next) => {
-    try {
-      const threads = await threadRepository.listForEvent(req.params.eventId);
-      res.json(threads);
-    } catch (err) {
-      next(err);
-    }
-  }
+  threadsController.listEventThreads
 );
 
-// Poster un message dans un thread
+router.post(
+  '/groups/:groupId/threads',
+  authMiddleware,
+  requireGroupMember,
+  threadsController.validateCreateThread,
+  threadsController.createGroupThreadHandler
+);
+router.get(
+  '/groups/:groupId/threads',
+  authMiddleware,
+  requireGroupMember,
+  threadsController.listGroupThreads
+);
+
 router.post(
   '/threads/:threadId/messages',
   authMiddleware,
-  validate(createMessageSchema),
-  async (req, res, next) => {
-    try {
-      const message = await postMessage(
-        {
-          threadId: req.params.threadId,
-          content: req.body.content,
-          parentMessageId: req.body.parentMessageId,
-        },
-        req.user.id
-      );
-      res.status(201).json(message);
-    } catch (err) {
-      next(err);
-    }
-  }
+  requireThreadAccess,
+  threadsController.validateCreateMessage,
+  threadsController.postMessageHandler
+);
+router.get(
+  '/threads/:threadId/messages',
+  authMiddleware,
+  requireThreadAccess,
+  threadsController.listMessages
 );
 
-// Lister les messages d'un thread
-router.get('/threads/:threadId/messages', authMiddleware, async (req, res, next) => {
-  try {
-    const messages = await messageRepository.listForThread(req.params.threadId);
-    res.json(messages);
-  } catch (err) {
-    next(err);
-  }
-});
-
 module.exports = router;
-

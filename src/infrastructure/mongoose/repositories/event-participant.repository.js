@@ -28,6 +28,10 @@ class EventParticipantRepository {
       .populate('user', 'firstName lastName email avatarUrl')
       .exec();
   }
+
+  async removeParticipant(eventId, userId) {
+    return EventParticipantModel.findOneAndDelete({ event: eventId, user: userId }).exec();
+  }
 }
 
 module.exports = new EventParticipantRepository();

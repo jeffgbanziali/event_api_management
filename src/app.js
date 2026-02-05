@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -16,6 +17,17 @@ app.use(express.json());
 
 // Routes API
 app.use('/api', apiRouter);
+
+// Documentation API (OpenAPI 3)
+app.get('/api-docs.json', (req, res) => {
+  res.sendFile(path.join(__dirname, 'docs', 'openapi.json'));
+});
+app.get('/api-docs', (req, res) => {
+  res.sendFile(path.join(__dirname, 'docs', 'api-docs.html'));
+});
+app.get('/api-docs.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'docs', 'api-docs.html'));
+});
 
 // Healthcheck
 app.get('/health', (req, res) => {

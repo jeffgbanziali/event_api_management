@@ -1,0 +1,187 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "My Social Networks API",
+    "description": "API REST type Facebook - Groupes, Événements, Fils de discussion, Albums/Photos, Sondages, Billetterie, Shopping list, Covoiturage. Authentification JWT (Bearer).",
+    "version": "1.0.0"
+  },
+  "servers": [{ "url": "/api", "description": "Base URL" }],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "Inscription",
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password", "firstName", "lastName"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string", "minLength": 8 },
+                  "firstName": { "type": "string" },
+                  "lastName": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Utilisateur créé" } }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Connexion",
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": { "email": { "type": "string" }, "password": { "type": "string" } }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "accessToken et user" } }
+      }
+    },
+    "/users/me": {
+      "get": { "summary": "Profil utilisateur connecté", "responses": { "200": { "description": "Profil" } } },
+      "patch": {
+        "summary": "Modifier le profil",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "firstName": { "type": "string" }, "lastName": { "type": "string" }, "avatarUrl": { "type": "string" } }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Profil mis à jour" } }
+      }
+    },
+    "/groups": {
+      "get": { "summary": "Lister les groupes visibles", "responses": { "200": { "description": "Liste" } } },
+      "post": { "summary": "Créer un groupe", "responses": { "201": { "description": "Groupe créé" } } }
+    },
+    "/groups/{groupId}": {
+      "get": { "summary": "Détails d'un groupe", "parameters": [{ "name": "groupId", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Groupe" } } },
+      "patch": { "summary": "Modifier (admin)", "parameters": [{ "name": "groupId", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "OK" } } },
+      "delete": { "summary": "Supprimer (admin)", "parameters": [{ "name": "groupId", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "OK" } } }
+    },
+    "/groups/{groupId}/members": {
+      "get": { "summary": "Lister les membres", "parameters": [{ "name": "groupId", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Liste" } } },
+      "post": { "summary": "Ajouter un membre (admin)", "parameters": [{ "name": "groupId", "in": "path", "required": true, "schema": { "type": "string" } }], "requestBody": { "content": { "application/json": { "schema": { "type": "object", "required": ["userId"], "properties": { "userId": {}, "role": { "enum": ["member", "admin"] } } } } } }, "responses": { "201": { "description": "OK" } } }
+    },
+    "/groups/{groupId}/members/{userId}": {
+      "delete": { "summary": "Retirer un membre (admin ou quitter)", "parameters": [{ "name": "groupId", "in": "path", "required": true }, { "name": "userId", "in": "path", "required": true }], "responses": { "200": { "description": "OK" } } }
+    },
+    "/groups/{groupId}/admins": {
+      "post": { "summary": "Promouvoir en admin", "parameters": [{ "name": "groupId", "in": "path", "required": true }], "requestBody": { "content": { "application/json": { "schema": { "type": "object", "required": ["userId"], "properties": { "userId": {} } } } } }, "responses": { "200": { "description": "OK" } } }
+    },
+    "/groups/{groupId}/admins/{userId}": {
+      "delete": { "summary": "Retirer le rôle admin", "parameters": [{ "name": "groupId", "in": "path" }, { "name": "userId", "in": "path" }], "responses": { "200": { "description": "OK" } } }
+    },
+    "/groups/{groupId}/threads": {
+      "get": { "summary": "Fils de discussion du groupe", "parameters": [{ "name": "groupId", "in": "path", "required": true }], "responses": { "200": { "description": "Liste" } } },
+      "post": { "summary": "Créer un fil (membre)", "parameters": [{ "name": "groupId", "in": "path", "required": true }], "requestBody": { "content": { "application/json": { "schema": { "type": "object", "properties": { "title": {} } } } } }, "responses": { "201": { "description": "OK" } } }
+    },
+    "/events": {
+      "get": { "summary": "Lister les événements visibles", "responses": { "200": { "description": "Liste" } } },
+      "post": { "summary": "Créer un événement", "responses": { "201": { "description": "OK" } } }
+    },
+    "/events/groups/{groupId}": {
+      "post": { "summary": "Créer un événement dans un groupe", "parameters": [{ "name": "groupId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
+    },
+    "/events/{eventId}": {
+      "get": { "summary": "Détails d'un événement", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "200": { "description": "Événement" } } },
+      "patch": { "summary": "Modifier (organisateur)", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "200": { "description": "OK" } } },
+      "delete": { "summary": "Supprimer (organisateur)", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "200": { "description": "OK" } } }
+    },
+    "/events/{eventId}/participants": {
+      "get": { "summary": "Lister les participants", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "200": { "description": "Liste" } } },
+      "post": { "summary": "Ajouter un participant (organisateur)", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "requestBody": { "content": { "application/json": { "schema": { "type": "object", "required": ["userId"], "properties": { "userId": {}, "role": { "enum": ["participant", "organizer"] } } } } } }, "responses": { "201": { "description": "OK" } } }
+    },
+    "/events/{eventId}/participants/{userId}": {
+      "delete": { "summary": "Retirer un participant", "parameters": [{ "name": "eventId", "in": "path" }, { "name": "userId", "in": "path" }], "responses": { "200": { "description": "OK" } } }
+    },
+    "/events/{eventId}/threads": {
+      "get": { "summary": "Fils de discussion", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "200": { "description": "Liste" } } },
+      "post": { "summary": "Créer un fil (participant)", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
+    },
+    "/events/{eventId}/albums": {
+      "get": { "summary": "Albums", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "200": { "description": "Liste" } } },
+      "post": { "summary": "Créer un album (participant)", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
+    },
+    "/events/{eventId}/polls": {
+      "get": { "summary": "Sondages", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "200": { "description": "Liste" } } },
+      "post": { "summary": "Créer un sondage (organisateur)", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
+    },
+    "/events/{eventId}/ticket-types": {
+      "get": { "summary": "Types de billets", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "security": [], "responses": { "200": { "description": "Liste" } } },
+      "post": { "summary": "Créer un type (organisateur)", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
+    },
+    "/events/{eventId}/tickets": {
+      "get": { "summary": "Billets vendus (organisateur)", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "200": { "description": "Liste" } } }
+    },
+    "/events/{eventId}/tickets/purchase": {
+      "post": { "summary": "Acheter un billet (public)", "security": [], "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
+    },
+    "/events/{eventId}/shopping-items": {
+      "get": { "summary": "Shopping list", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "200": { "description": "Liste" } } },
+      "post": { "summary": "Ajouter un item (participant)", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
+    },
+    "/events/{eventId}/rides": {
+      "get": { "summary": "Covoiturage", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "200": { "description": "Liste" } } },
+      "post": { "summary": "Proposer un trajet (participant)", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
+    },
+    "/threads/{threadId}/messages": {
+      "get": { "summary": "Messages d'un thread", "parameters": [{ "name": "threadId", "in": "path", "required": true }], "responses": { "200": { "description": "Liste" } } },
+      "post": { "summary": "Poster un message", "parameters": [{ "name": "threadId", "in": "path", "required": true }], "requestBody": { "content": { "application/json": { "schema": { "type": "object", "required": ["content"], "properties": { "content": {}, "parentMessageId": {} } } } } }, "responses": { "201": { "description": "OK" } } }
+    },
+    "/albums/{albumId}/photos": {
+      "get": { "summary": "Photos", "parameters": [{ "name": "albumId", "in": "path", "required": true }], "responses": { "200": { "description": "Liste" } } },
+      "post": { "summary": "Ajouter une photo", "parameters": [{ "name": "albumId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
+    },
+    "/photos/{photoId}/comments": {
+      "get": { "summary": "Commentaires", "parameters": [{ "name": "photoId", "in": "path", "required": true }], "responses": { "200": { "description": "Liste" } } },
+      "post": { "summary": "Commenter", "parameters": [{ "name": "photoId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
+    },
+    "/polls/{pollId}/questions": {
+      "post": { "summary": "Ajouter une question (organisateur)", "parameters": [{ "name": "pollId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
+    },
+    "/questions/{questionId}/options": {
+      "post": { "summary": "Ajouter une option (organisateur)", "parameters": [{ "name": "questionId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
+    },
+    "/questions/{questionId}/votes": {
+      "post": { "summary": "Voter (participant)", "parameters": [{ "name": "questionId", "in": "path", "required": true }], "requestBody": { "content": { "application/json": { "schema": { "type": "object", "required": ["optionId"], "properties": { "optionId": {} } } } } }, "responses": { "201": { "description": "OK" } } }
+    },
+    "/shopping-items/{itemId}": {
+      "delete": { "summary": "Supprimer un item", "parameters": [{ "name": "itemId", "in": "path", "required": true }], "responses": { "200": { "description": "OK" } } }
+    },
+    "/rides/{rideId}": {
+      "delete": { "summary": "Supprimer un trajet (conducteur)", "parameters": [{ "name": "rideId", "in": "path", "required": true }], "responses": { "200": { "description": "OK" } } }
+    },
+    "/rides/{rideId}/bookings": {
+      "get": { "summary": "Réservations", "parameters": [{ "name": "rideId", "in": "path", "required": true }], "responses": { "200": { "description": "Liste" } } },
+      "post": { "summary": "Réserver une place", "parameters": [{ "name": "rideId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
+    },
+    "/bookings/{bookingId}": {
+      "delete": { "summary": "Annuler une réservation", "parameters": [{ "name": "bookingId", "in": "path", "required": true }], "responses": { "200": { "description": "OK" } } }
+    }
+  }
+}

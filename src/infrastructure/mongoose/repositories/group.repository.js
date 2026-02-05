@@ -1,4 +1,5 @@
 const GroupModel = require('../models/group.model');
+const GroupMembershipModel = require('../models/group-membership.model');
 
 class GroupRepository {
   async create(data) {
@@ -10,10 +11,19 @@ class GroupRepository {
     return GroupModel.findById(id).exec();
   }
 
+  async updateById(id, data) {
+    return GroupModel.findByIdAndUpdate(id, { $set: data }, { new: true }).exec();
+  }
+
+  async deleteById(id) {
+    return GroupModel.findByIdAndDelete(id).exec();
+  }
+
   async listVisibleForUser(userId) {
-    // Pour l'instant, on renvoie tous les groupes publics.
-    // Plus tard on pourra affiner (membre, privé, secret).
-    return GroupModel.find({ type: 'public' }).exec();
+    const memberGroupIds = await GroupMembershipModel.distinct('group', { user: userId }).exec();
+    return GroupModel.find({
+      $or: [{ type: 'public' }, { _id: { $in: memberGroupIds } }],
+    }).exec();
   }
 }
 

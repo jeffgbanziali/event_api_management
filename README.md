@@ -115,6 +115,18 @@ Une fois le serveur démarré :
 - **Base des routes métier :**  
   `http://localhost:3000/api`
 
+### Remplir la base avec des données de démo (seed)
+
+Pour obtenir des utilisateurs, groupes, événements, messages, albums, sondages, billets, etc. **prêts à l’emploi**, lance l’API dans un premier terminal (`npm run dev`), puis dans un second :
+
+```bash
+npm run seed
+```
+
+Le script appelle tes endpoints (inscription, création de groupes/événements, etc.) et affiche en fin d’exécution les **comptes de test** (mot de passe commun : `Password123!`) : `alice@example.com`, `bob@example.com`, `charlie@example.com`, `diana@example.com`. Tu peux ensuite te connecter via `POST /api/auth/login` et utiliser l’API avec ces comptes.
+
+Option : `SEED_BASE_URL=http://localhost:3000 npm run seed` si ton API tourne sur un autre port ou host.
+
 ---
 
 ## Authentification

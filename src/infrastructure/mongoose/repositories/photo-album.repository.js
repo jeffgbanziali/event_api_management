@@ -18,6 +18,14 @@ class PhotoAlbumRepository {
   async listForEvent(eventId) {
     return PhotoAlbumModel.find({ event: eventId }).exec();
   }
+
+  async updateById(id, data) {
+    return PhotoAlbumModel.findByIdAndUpdate(id, { $set: data }, { new: true }).exec();
+  }
+
+  async deleteById(id) {
+    return PhotoAlbumModel.findByIdAndDelete(id).exec();
+  }
 }
 
 module.exports = new PhotoAlbumRepository();

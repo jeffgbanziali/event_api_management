@@ -2,11 +2,20 @@ const {
   createAlbumSchema,
   uploadPhotoSchema,
   createCommentSchema,
+  updateAlbumSchema,
+  updatePhotoSchema,
+  updateCommentSchema,
 } = require('../../../validation/schemas/album.validation');
 const { validate } = require('../../../validation/middlewares/validate.middleware');
 const { createAlbumForEvent } = require('../../../application/use-cases/albums/create-album.usecase');
+const { updateAlbum } = require('../../../application/use-cases/albums/update-album.usecase');
+const { deleteAlbum } = require('../../../application/use-cases/albums/delete-album.usecase');
 const { uploadPhotoToAlbum } = require('../../../application/use-cases/albums/upload-photo.usecase');
+const { updatePhoto } = require('../../../application/use-cases/albums/update-photo.usecase');
+const { deletePhoto } = require('../../../application/use-cases/albums/delete-photo.usecase');
 const { commentPhoto } = require('../../../application/use-cases/albums/comment-photo.usecase');
+const { updateComment } = require('../../../application/use-cases/albums/update-comment.usecase');
+const { deleteComment } = require('../../../application/use-cases/albums/delete-comment.usecase');
 const photoAlbumRepository = require('../../../infrastructure/mongoose/repositories/photo-album.repository');
 const photoRepository = require('../../../infrastructure/mongoose/repositories/photo.repository');
 const commentRepository = require('../../../infrastructure/mongoose/repositories/comment.repository');
@@ -15,6 +24,9 @@ const eventParticipantRepository = require('../../../infrastructure/mongoose/rep
 const validateCreateAlbum = validate(createAlbumSchema);
 const validateUploadPhoto = validate(uploadPhotoSchema);
 const validateCreateComment = validate(createCommentSchema);
+const validateUpdateAlbum = validate(updateAlbumSchema);
+const validateUpdatePhoto = validate(updatePhotoSchema);
+const validateUpdateComment = validate(updateCommentSchema);
 
 async function createEventAlbum(req, res, next) {
   try {
@@ -36,6 +48,24 @@ async function listEventAlbums(req, res, next) {
   try {
     const albums = await photoAlbumRepository.listForEvent(req.params.eventId);
     res.json(albums);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function updateEventAlbum(req, res, next) {
+  try {
+    const album = await updateAlbum(req.params.albumId, req.body);
+    res.json(album);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function deleteEventAlbum(req, res, next) {
+  try {
+    await deleteAlbum(req.params.albumId);
+    res.status(204).send();
   } catch (err) {
     next(err);
   }
@@ -79,6 +109,24 @@ async function listAlbumPhotos(req, res, next) {
   }
 }
 
+async function updateAlbumPhoto(req, res, next) {
+  try {
+    const photo = await updatePhoto(req.params.photoId, req.body);
+    res.json(photo);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function deleteAlbumPhoto(req, res, next) {
+  try {
+    await deletePhoto(req.params.photoId);
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function addComment(req, res, next) {
   try {
     const photo = await photoRepository.findById(req.params.photoId);
@@ -115,15 +163,42 @@ async function listPhotoComments(req, res, next) {
   }
 }
 
+async function updatePhotoComment(req, res, next) {
+  try {
+    const comment = await updateComment(req.params.commentId, req.body);
+    res.json(comment);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function deletePhotoComment(req, res, next) {
+  try {
+    await deleteComment(req.params.commentId);
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   validateCreateAlbum,
   validateUploadPhoto,
   validateCreateComment,
+  validateUpdateAlbum,
+  validateUpdatePhoto,
+  validateUpdateComment,
   createEventAlbum,
   listEventAlbums,
+  updateEventAlbum,
+  deleteEventAlbum,
   uploadPhoto,
   listAlbumPhotos,
+  updateAlbumPhoto,
+  deleteAlbumPhoto,
   addComment,
   listPhotoComments,
+  updatePhotoComment,
+  deletePhotoComment,
 };
 

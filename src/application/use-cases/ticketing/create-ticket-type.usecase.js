@@ -9,6 +9,12 @@ async function createTicketType(input, currentUserId) {
     throw error;
   }
 
+  if (!event.settings?.ticketingEnabled) {
+    const error = new Error('Ticketing is not enabled for this event');
+    error.status = 400;
+    throw error;
+  }
+
   const ticketType = await ticketTypeRepository.create({
     eventId: input.eventId,
     name: input.name,

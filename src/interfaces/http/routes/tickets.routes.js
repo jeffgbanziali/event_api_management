@@ -1,5 +1,5 @@
 const express = require('express');
-const { authMiddleware } = require('../../../middlewares/auth.middleware');
+const { authMiddleware, optionalAuthMiddleware } = require('../../../middlewares/auth.middleware');
 const { requireEventOrganizer } = require('../../../middlewares/authorization.middleware');
 const ticketsController = require('../controllers/tickets.controller');
 
@@ -14,8 +14,23 @@ router.post(
 );
 router.get('/events/:eventId/ticket-types', ticketsController.listTicketTypes);
 
+router.patch(
+  '/events/:eventId/ticket-types/:ticketTypeId',
+  authMiddleware,
+  requireEventOrganizer,
+  ticketsController.validateUpdateTicketType,
+  ticketsController.updateTicketTypeHandler
+);
+router.delete(
+  '/events/:eventId/ticket-types/:ticketTypeId',
+  authMiddleware,
+  requireEventOrganizer,
+  ticketsController.deleteTicketTypeHandler
+);
+
 router.post(
   '/events/:eventId/tickets/purchase',
+  optionalAuthMiddleware,
   ticketsController.validatePurchase,
   ticketsController.purchase
 );

@@ -21,6 +21,18 @@ class PhotoRepository {
       .sort({ createdAt: 1 })
       .exec();
   }
+
+  async updateById(id, data) {
+    return PhotoModel.findByIdAndUpdate(id, { $set: data }, { new: true }).exec();
+  }
+
+  async deleteById(id) {
+    return PhotoModel.findByIdAndDelete(id).exec();
+  }
+
+  async deleteByAlbumId(albumId) {
+    return PhotoModel.deleteMany({ album: albumId }).exec();
+  }
 }
 
 module.exports = new PhotoRepository();

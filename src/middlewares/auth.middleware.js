@@ -21,7 +21,27 @@ function authMiddleware(req, res, next) {
   }
 }
 
+/** N'échoue pas si pas de token ; définit req.user uniquement si token valide (pour routes à accès public ou restreint selon contexte). */
+function optionalAuthMiddleware(req, res, next) {
+  const authHeader = req.headers.authorization || '';
+  const [, token] = authHeader.split(' ');
+
+  if (!token) return next();
+
+  try {
+    const decoded = jwt.verify(token, env.jwtSecret);
+    req.user = {
+      id: decoded.sub,
+      email: decoded.email,
+    };
+  } catch (err) {
+    // ignore invalid token for optional auth
+  }
+  return next();
+}
+
 module.exports = {
   authMiddleware,
+  optionalAuthMiddleware,
 };
 

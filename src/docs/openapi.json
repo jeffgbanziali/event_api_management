@@ -127,19 +127,34 @@
       "get": { "summary": "Albums", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "200": { "description": "Liste" } } },
       "post": { "summary": "Créer un album (participant)", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
     },
+    "/albums/{albumId}": {
+      "patch": { "summary": "Modifier un album (participant)", "parameters": [{ "name": "albumId", "in": "path", "required": true }], "responses": { "200": { "description": "OK" } } },
+      "delete": { "summary": "Supprimer un album (participant)", "parameters": [{ "name": "albumId", "in": "path", "required": true }], "responses": { "204": { "description": "No content" } } }
+    },
     "/events/{eventId}/polls": {
       "get": { "summary": "Sondages", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "200": { "description": "Liste" } } },
       "post": { "summary": "Créer un sondage (organisateur)", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
     },
+    "/polls/{pollId}": {
+      "patch": { "summary": "Modifier un sondage (organisateur)", "parameters": [{ "name": "pollId", "in": "path", "required": true }], "responses": { "200": { "description": "OK" } } },
+      "delete": { "summary": "Supprimer un sondage (organisateur)", "parameters": [{ "name": "pollId", "in": "path", "required": true }], "responses": { "204": { "description": "No content" } } }
+    },
+    "/polls/{pollId}/results": {
+      "get": { "summary": "Résultats agrégés (participant)", "parameters": [{ "name": "pollId", "in": "path", "required": true }], "responses": { "200": { "description": "Résultats par question/option" } } }
+    },
     "/events/{eventId}/ticket-types": {
       "get": { "summary": "Types de billets", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "security": [], "responses": { "200": { "description": "Liste" } } },
-      "post": { "summary": "Créer un type (organisateur)", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
+      "post": { "summary": "Créer un type (organisateur, billetterie activée)", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
+    },
+    "/events/{eventId}/ticket-types/{ticketTypeId}": {
+      "patch": { "summary": "Modifier un type (organisateur)", "parameters": [{ "name": "eventId", "in": "path", "required": true }, { "name": "ticketTypeId", "in": "path", "required": true }], "responses": { "200": { "description": "OK" } } },
+      "delete": { "summary": "Supprimer un type (organisateur, 0 vente)", "parameters": [{ "name": "eventId", "in": "path", "required": true }, { "name": "ticketTypeId", "in": "path", "required": true }], "responses": { "204": { "description": "No content" } } }
     },
     "/events/{eventId}/tickets": {
       "get": { "summary": "Billets vendus (organisateur)", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "200": { "description": "Liste" } } }
     },
     "/events/{eventId}/tickets/purchase": {
-      "post": { "summary": "Acheter un billet (public)", "security": [], "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
+      "post": { "summary": "Acheter un billet (auth optionnelle; privé = participant)", "security": [], "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
     },
     "/events/{eventId}/shopping-items": {
       "get": { "summary": "Shopping list", "parameters": [{ "name": "eventId", "in": "path", "required": true }], "responses": { "200": { "description": "Liste" } } },
@@ -157,15 +172,31 @@
       "get": { "summary": "Photos", "parameters": [{ "name": "albumId", "in": "path", "required": true }], "responses": { "200": { "description": "Liste" } } },
       "post": { "summary": "Ajouter une photo", "parameters": [{ "name": "albumId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
     },
+    "/photos/{photoId}": {
+      "patch": { "summary": "Modifier une photo (participant)", "parameters": [{ "name": "photoId", "in": "path", "required": true }], "responses": { "200": { "description": "OK" } } },
+      "delete": { "summary": "Supprimer une photo (participant)", "parameters": [{ "name": "photoId", "in": "path", "required": true }], "responses": { "204": { "description": "No content" } } }
+    },
     "/photos/{photoId}/comments": {
       "get": { "summary": "Commentaires", "parameters": [{ "name": "photoId", "in": "path", "required": true }], "responses": { "200": { "description": "Liste" } } },
       "post": { "summary": "Commenter", "parameters": [{ "name": "photoId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
     },
+    "/photos/{photoId}/comments/{commentId}": {
+      "patch": { "summary": "Modifier un commentaire (auteur)", "parameters": [{ "name": "photoId", "in": "path", "required": true }, { "name": "commentId", "in": "path", "required": true }], "responses": { "200": { "description": "OK" } } },
+      "delete": { "summary": "Supprimer un commentaire (auteur)", "parameters": [{ "name": "photoId", "in": "path", "required": true }, { "name": "commentId", "in": "path", "required": true }], "responses": { "204": { "description": "No content" } } }
+    },
     "/polls/{pollId}/questions": {
       "post": { "summary": "Ajouter une question (organisateur)", "parameters": [{ "name": "pollId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
     },
+    "/questions/{questionId}": {
+      "patch": { "summary": "Modifier une question (organisateur)", "parameters": [{ "name": "questionId", "in": "path", "required": true }], "responses": { "200": { "description": "OK" } } },
+      "delete": { "summary": "Supprimer une question (organisateur)", "parameters": [{ "name": "questionId", "in": "path", "required": true }], "responses": { "204": { "description": "No content" } } }
+    },
     "/questions/{questionId}/options": {
       "post": { "summary": "Ajouter une option (organisateur)", "parameters": [{ "name": "questionId", "in": "path", "required": true }], "responses": { "201": { "description": "OK" } } }
+    },
+    "/options/{optionId}": {
+      "patch": { "summary": "Modifier une option (organisateur)", "parameters": [{ "name": "optionId", "in": "path", "required": true }], "responses": { "200": { "description": "OK" } } },
+      "delete": { "summary": "Supprimer une option (organisateur)", "parameters": [{ "name": "optionId", "in": "path", "required": true }], "responses": { "204": { "description": "No content" } } }
     },
     "/questions/{questionId}/votes": {
       "post": { "summary": "Voter (participant)", "parameters": [{ "name": "questionId", "in": "path", "required": true }], "requestBody": { "content": { "application/json": { "schema": { "type": "object", "required": ["optionId"], "properties": { "optionId": {} } } } } }, "responses": { "201": { "description": "OK" } } }

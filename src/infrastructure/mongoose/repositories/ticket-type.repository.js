@@ -29,6 +29,14 @@ class TicketTypeRepository {
       { new: true }
     ).exec();
   }
+
+  async updateById(id, data) {
+    return TicketTypeModel.findByIdAndUpdate(id, { $set: data }, { new: true }).exec();
+  }
+
+  async deleteById(id) {
+    return TicketTypeModel.findByIdAndDelete(id).exec();
+  }
 }
 
 module.exports = new TicketTypeRepository();

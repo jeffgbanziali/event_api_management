@@ -18,10 +18,27 @@ const voteSchema = Joi.object({
   optionId: Joi.string().required(),
 });
 
+const updatePollSchema = Joi.object({
+  title: Joi.string().min(1).max(200),
+}).min(1);
+
+const updateQuestionSchema = Joi.object({
+  text: Joi.string().min(1).max(500),
+  order: Joi.number().integer().min(0),
+}).min(1);
+
+const updateOptionSchema = Joi.object({
+  text: Joi.string().min(1).max(200),
+  order: Joi.number().integer().min(0),
+}).min(1);
+
 module.exports = {
   createPollSchema,
   createQuestionSchema,
   createOptionSchema,
   voteSchema,
+  updatePollSchema,
+  updateQuestionSchema,
+  updateOptionSchema,
 };
 

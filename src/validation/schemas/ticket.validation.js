@@ -7,6 +7,13 @@ const createTicketTypeSchema = Joi.object({
   quantity: Joi.number().integer().min(1).required(),
 });
 
+const updateTicketTypeSchema = Joi.object({
+  name: Joi.string().min(1).max(200),
+  price: Joi.number().min(0),
+  currency: Joi.string().min(1).max(10),
+  quantity: Joi.number().integer().min(1),
+}).min(1);
+
 const purchaseTicketSchema = Joi.object({
   ticketTypeId: Joi.string().required(),
   buyerEmail: Joi.string().email().required(),
@@ -22,6 +29,7 @@ const purchaseTicketSchema = Joi.object({
 
 module.exports = {
   createTicketTypeSchema,
+  updateTicketTypeSchema,
   purchaseTicketSchema,
 };
 

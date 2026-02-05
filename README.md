@@ -1,27 +1,82 @@
 # My Social Networks API
 
-API REST type Facebook — Groupes, Événements, Fils de discussion, Albums/Photos, Sondages, Billetterie, Shopping list, Covoiturage.
+> API REST inspirée de Facebook — groupes, événements, fils de discussion, albums photo, sondages, billetterie, liste de courses et covoiturage.
 
-**Stack :** Node.js, Express, MongoDB, Mongoose, JWT, Joi (validation), architecture en couches (routes → contrôleurs → use-cases → repositories).
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express-4.x-lightgrey.svg)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-brightgreen.svg)](https://mongoosejs.com/)
+[![JWT](https://img.shields.io/badge/Auth-JWT-blue.svg)](https://jwt.io/)
+[![License](https://img.shields.io/badge/Licence-MIT-yellow.svg)](LICENSE)
+
+---
+
+## Sommaire
+
+- [Présentation](#présentation)
+- [Prérequis](#prérequis)
+- [Installation](#installation)
+- [Configuration (.env)](#configuration-env)
+- [Lancer l’API](#lancer-lapi)
+- [Authentification](#authentification)
+- [Documentation des endpoints](#documentation-des-endpoints)
+- [Structure du projet](#structure-du-projet)
+- [Rendu attendu](#rendu-attendu)
+
+---
+
+## Présentation
+
+Cette API permet de gérer des **groupes** (public, privé, secret), des **événements** avec participants et organisateurs, des **fils de discussion** (liés à un groupe ou un événement), des **albums photo** avec commentaires, des **sondages** à choix unique, une **billetterie**, ainsi que des bonus **liste de courses** et **covoiturage**.
+
+**Stack technique :**
+
+| Couche        | Technologie                          |
+|---------------|--------------------------------------|
+| Runtime       | Node.js                              |
+| Framework     | Express                              |
+| Base de données | MongoDB (Mongoose)                 |
+| Authentification | JWT (jsonwebtoken)                |
+| Validation des entrées | Joi                    |
+| Architecture  | Routes → Contrôleurs → Use-cases → Repositories |
 
 ---
 
 ## Prérequis
 
-- **Node.js** (v18+ recommandé)
-- **MongoDB** (local ou Atlas)
+- **Node.js** 18 ou supérieur
+- **MongoDB** (instance locale ou cluster [MongoDB Atlas](https://www.mongodb.com/cloud/atlas))
+- Un fichier **`.env`** à la racine du projet (voir section suivante)
 
 ---
 
 ## Installation
 
 ```bash
+# Cloner le dépôt
 git clone <url-du-repo>
 cd my-social-networks-api
+
+# Installer les dépendances
 npm install
 ```
 
-Créer un fichier **`.env`** à la racine :
+---
+
+## Configuration (.env)
+
+L’application charge sa configuration depuis le fichier **`.env`** à la racine du projet.  
+Les variables lues par le code sont définies dans `src/config/env.js`.
+
+Crée un fichier **`.env`** avec les **mêmes noms de variables** que ceux utilisés dans le projet :
+
+| Variable       | Description                          | Exemple (à adapter) |
+|----------------|--------------------------------------|----------------------|
+| `PORT`         | Port du serveur HTTP                 | `3000`               |
+| `MONGODB_URI`  | Chaîne de connexion MongoDB          | Voir ci‑dessous      |
+| `JWT_SECRET`   | Secret pour signer les tokens JWT    | Chaîne longue et secrète |
+| `JWT_EXPIRES_IN` | Durée de validité du token         | `15m`                |
+
+**Exemple de `.env` :**
 
 ```env
 PORT=3000
@@ -30,202 +85,238 @@ JWT_SECRET=votre-secret-jwt-tres-long-et-securise
 JWT_EXPIRES_IN=15m
 ```
 
+- Pour une **base locale** :  
+  `MONGODB_URI=mongodb://localhost:27017/my-social-networks`
+
+- Pour **MongoDB Atlas** :  
+  utilise l’URI fournie par ton cluster (format `mongodb+srv://...`).  
+  Ne partage pas ce fichier ni ne le commite : `.env` doit rester dans `.gitignore`.
+
+Si une variable manque, l’application utilise les valeurs par défaut définies dans `src/config/env.js`.
+
 ---
 
 ## Lancer l’API
 
 ```bash
-# Production
+# Mode production
 npm start
 
-# Développement (rechargement auto)
+# Mode développement (rechargement automatique avec nodemon)
 npm run dev
 ```
 
-L’API écoute sur **http://localhost:3000** (ou le `PORT` défini dans `.env`).
+Une fois le serveur démarré :
 
-- **Healthcheck :** `GET http://localhost:3000/health`
-- **Base des routes métier :** `http://localhost:3000/api`
+- **Contrôle de santé :**  
+  `GET http://localhost:3000/health`  
+  (remplace `3000` par la valeur de `PORT` si besoin)
+
+- **Base des routes métier :**  
+  `http://localhost:3000/api`
 
 ---
 
 ## Authentification
 
-Toutes les routes protégées nécessitent un **JWT** dans le header :
+Les routes protégées exigent un **token JWT** dans l’en-tête HTTP :
 
-```
+```http
 Authorization: Bearer <accessToken>
 ```
 
 ### Obtenir un token
 
-1. **Inscription**
-   - `POST /api/auth/register`
-   - Body (JSON) : `email`, `password` (min 8 caractères), `firstName`, `lastName`
-   - Réponse : utilisateur créé (sans mot de passe)
+| Étape | Méthode | Route | Body (JSON) |
+|--------|--------|--------|-------------|
+| 1. Inscription | `POST` | `/api/auth/register` | `email`, `password` (min. 8 caractères), `firstName`, `lastName` |
+| 2. Connexion   | `POST` | `/api/auth/login`    | `email`, `password` |
 
-2. **Connexion**
-   - `POST /api/auth/login`
-   - Body (JSON) : `email`, `password`
-   - Réponse : `{ "accessToken": "...", "user": { ... } }`
-
-Utiliser `accessToken` pour les requêtes suivantes.
+La réponse de **login** contient `accessToken` et `user`. Utilise `accessToken` pour toutes les requêtes suivantes nécessitant une authentification.
 
 ---
 
-## Endpoints principaux
+## Documentation des endpoints
+
+**Documentation interactive (Swagger UI)**  
+Une fois l’API lancée (`npm start` ou `npm run dev`), ouvre dans ton navigateur :
+
+- **Doc interactive :** [http://localhost:3000/api-docs](http://localhost:3000/api-docs)  
+  (remplace `3000` par la valeur de `PORT` dans ton `.env` si tu as changé le port)
+
+Tu y trouveras tous les endpoints (dont résultats des sondages, PATCH/DELETE albums, photos, commentaires, sondages, types de billets), les paramètres attendus et la possibilité d’exécuter des requêtes de test. La spécification OpenAPI brute est aussi disponible en JSON : `GET http://localhost:3000/api-docs.json`.
+
+---
+
+Les routes sont préfixées par **`/api`**.  
+Rappel : sauf mention contraire, les routes listées ci‑dessous nécessitent le header `Authorization: Bearer <accessToken>`.
+
+---
 
 ### Utilisateurs
 
-| Méthode | Route | Description | Auth |
-|--------|--------|-------------|------|
-| GET | `/api/users/me` | Profil de l’utilisateur connecté | Oui |
-| PATCH | `/api/users/me` | Modifier profil (`firstName`, `lastName`, `avatarUrl`) | Oui |
+| Méthode | Route | Description |
+|--------|--------|-------------|
+| `GET`  | `/api/users/me`   | Profil de l’utilisateur connecté |
+| `PATCH`| `/api/users/me`   | Modifier le profil (`firstName`, `lastName`, `avatarUrl`) |
 
 ---
 
 ### Groupes
 
-| Méthode | Route | Description | Auth |
-|--------|--------|-------------|------|
-| POST | `/api/groups` | Créer un groupe | Oui |
-| GET | `/api/groups` | Lister les groupes visibles (publics + ceux dont on est membre) | Oui |
-| GET | `/api/groups/:groupId` | Détail d’un groupe | Oui |
-| PATCH | `/api/groups/:groupId` | Modifier (admin) | Oui |
-| DELETE | `/api/groups/:groupId` | Supprimer (admin) | Oui |
-| GET | `/api/groups/:groupId/members` | Lister les membres | Oui |
-| POST | `/api/groups/:groupId/members` | Ajouter un membre (admin), body : `userId`, `role` (member/admin) | Oui |
-| DELETE | `/api/groups/:groupId/members/:userId` | Retirer un membre (admin ou quitter) | Oui |
-| POST | `/api/groups/:groupId/admins` | Promouvoir en admin, body : `userId` | Oui (admin) |
-| DELETE | `/api/groups/:groupId/admins/:userId` | Retirer le rôle admin | Oui (admin) |
-| GET | `/api/groups/:groupId/threads` | Fils de discussion du groupe | Oui (membre) |
-| POST | `/api/groups/:groupId/threads` | Créer un fil, body : `title?` | Oui (membre) |
+| Méthode | Route | Description |
+|--------|--------|-------------|
+| `POST`   | `/api/groups` | Créer un groupe |
+| `GET`    | `/api/groups` | Lister les groupes visibles (publics + ceux dont on est membre) |
+| `GET`    | `/api/groups/:groupId` | Détail d’un groupe |
+| `PATCH`  | `/api/groups/:groupId` | Modifier (réservé aux admins du groupe) |
+| `DELETE` | `/api/groups/:groupId` | Supprimer (réservé aux admins) |
+| `GET`    | `/api/groups/:groupId/members` | Lister les membres |
+| `POST`   | `/api/groups/:groupId/members` | Ajouter un membre — body : `userId`, `role` (member \| admin) |
+| `DELETE` | `/api/groups/:groupId/members/:userId` | Retirer un membre (admin ou quitter le groupe) |
+| `POST`   | `/api/groups/:groupId/admins` | Promouvoir un membre en admin — body : `userId` |
+| `DELETE` | `/api/groups/:groupId/admins/:userId` | Retirer le rôle admin |
+| `GET`    | `/api/groups/:groupId/threads` | Fils de discussion du groupe (réservé aux membres) |
+| `POST`   | `/api/groups/:groupId/threads` | Créer un fil — body : `title` (optionnel) |
 
-**Création groupe (POST /api/groups)** — body exemple :  
-`name`, `description?`, `icon?`, `coverPhotoUrl?`, `type` (public | private | secret), `allowMembersToPost`, `allowMembersToCreateEvents`.
+**Création d’un groupe** — body type :  
+`name`, `description?`, `icon?`, `coverPhotoUrl?`, `type` (public \| private \| secret), `allowMembersToPost`, `allowMembersToCreateEvents`.
 
 ---
 
 ### Événements
 
-| Méthode | Route | Description | Auth |
-|--------|--------|-------------|------|
-| POST | `/api/events` | Créer un événement | Oui |
-| POST | `/api/events/groups/:groupId` | Créer un événement dans un groupe | Oui (membre + droit création) |
-| GET | `/api/events` | Lister les événements visibles (publics + ceux où on participe) | Oui |
-| GET | `/api/events/:eventId` | Détail d’un événement | Oui |
-| PATCH | `/api/events/:eventId` | Modifier (organisateur) | Oui |
-| DELETE | `/api/events/:eventId` | Supprimer (organisateur) | Oui |
-| GET | `/api/events/:eventId/participants` | Lister les participants | Oui (participant) |
-| POST | `/api/events/:eventId/participants` | Ajouter un participant/organisateur, body : `userId`, `role` (participant/organizer) | Oui (organisateur) |
-| DELETE | `/api/events/:eventId/participants/:userId` | Retirer un participant (organisateur ou quitter) | Oui |
+| Méthode | Route | Description |
+|--------|--------|-------------|
+| `POST`   | `/api/events` | Créer un événement |
+| `POST`   | `/api/events/groups/:groupId` | Créer un événement dans un groupe |
+| `GET`    | `/api/events` | Lister les événements visibles |
+| `GET`    | `/api/events/:eventId` | Détail d’un événement |
+| `PATCH`  | `/api/events/:eventId` | Modifier (organisateur) |
+| `DELETE` | `/api/events/:eventId` | Supprimer (organisateur) |
+| `GET`    | `/api/events/:eventId/participants` | Lister les participants (réservé aux participants) |
+| `POST`   | `/api/events/:eventId/participants` | Ajouter un participant — body : `userId`, `role` (participant \| organizer) |
+| `DELETE` | `/api/events/:eventId/participants/:userId` | Retirer un participant (organisateur ou quitter) |
 
-**Création événement** — body : `name`, `description?`, `startDate`, `endDate`, `location`, `coverPhotoUrl?`, `visibility` (public | private), `settings?` (shoppingListEnabled, carpoolingEnabled, ticketingEnabled).
-
----
-
-### Fils de discussion & messages
-
-| Méthode | Route | Description | Auth |
-|--------|--------|-------------|------|
-| GET | `/api/events/:eventId/threads` | Fils de l’événement | Oui (participant) |
-| POST | `/api/events/:eventId/threads` | Créer un fil pour l’événement, body : `title?` | Oui (participant) |
-| GET | `/api/threads/:threadId/messages` | Messages d’un thread | Oui (participant event ou membre groupe) |
-| POST | `/api/threads/:threadId/messages` | Poster un message, body : `content`, `parentMessageId?` | Oui |
+**Création d’un événement** — body type :  
+`name`, `description?`, `startDate`, `endDate`, `location`, `coverPhotoUrl?`, `visibility` (public \| private), `settings?` (shoppingListEnabled, carpoolingEnabled, ticketingEnabled).
 
 ---
 
-### Albums, photos, commentaires
+### Fils de discussion et messages
 
-| Méthode | Route | Description | Auth |
-|--------|--------|-------------|------|
-| GET | `/api/events/:eventId/albums` | Albums de l’événement | Oui (participant) |
-| POST | `/api/events/:eventId/albums` | Créer un album, body : `name`, `description?` | Oui (participant) |
-| GET | `/api/albums/:albumId/photos` | Photos de l’album | Oui |
-| POST | `/api/albums/:albumId/photos` | Ajouter une photo, body : `url`, `caption?` | Oui (participant event) |
-| GET | `/api/photos/:photoId/comments` | Commentaires d’une photo | Oui |
-| POST | `/api/photos/:photoId/comments` | Commenter, body : `content` | Oui (participant event) |
+| Méthode | Route | Description |
+|--------|--------|-------------|
+| `GET`  | `/api/events/:eventId/threads` | Fils de l’événement (participants) |
+| `POST` | `/api/events/:eventId/threads` | Créer un fil — body : `title?` |
+| `GET`  | `/api/threads/:threadId/messages` | Messages d’un thread (participant de l’event ou membre du groupe) |
+| `POST` | `/api/threads/:threadId/messages` | Poster un message — body : `content`, `parentMessageId?` (réponse) |
+
+---
+
+### Albums, photos et commentaires
+
+| Méthode | Route | Description |
+|--------|--------|-------------|
+| `GET`  | `/api/events/:eventId/albums` | Albums de l’événement |
+| `POST` | `/api/events/:eventId/albums` | Créer un album — body : `name`, `description?` |
+| `GET`  | `/api/albums/:albumId/photos` | Photos de l’album |
+| `POST` | `/api/albums/:albumId/photos` | Ajouter une photo — body : `url`, `caption?` (réservé aux participants) |
+| `GET`  | `/api/photos/:photoId/comments` | Commentaires d’une photo |
+| `POST` | `/api/photos/:photoId/comments` | Commenter — body : `content` (réservé aux participants) |
 
 ---
 
 ### Sondages
 
-| Méthode | Route | Description | Auth |
-|--------|--------|-------------|------|
-| GET | `/api/events/:eventId/polls` | Sondages de l’événement | Oui (participant) |
-| POST | `/api/events/:eventId/polls` | Créer un sondage, body : `title` | Oui (organisateur) |
-| POST | `/api/polls/:pollId/questions` | Ajouter une question, body : `text`, `order?` | Oui (organisateur) |
-| POST | `/api/questions/:questionId/options` | Ajouter une option, body : `text`, `order?` | Oui (organisateur) |
-| POST | `/api/questions/:questionId/votes` | Voter, body : `optionId` | Oui (participant) |
+| Méthode | Route | Description |
+|--------|--------|-------------|
+| `GET`  | `/api/events/:eventId/polls` | Sondages de l’événement (participants) |
+| `POST` | `/api/events/:eventId/polls` | Créer un sondage — body : `title` (organisateur) |
+| `POST` | `/api/polls/:pollId/questions` | Ajouter une question — body : `text`, `order?` (organisateur) |
+| `POST` | `/api/questions/:questionId/options` | Ajouter une option — body : `text`, `order?` (organisateur) |
+| `POST` | `/api/questions/:questionId/votes` | Voter — body : `optionId` (participant) |
 
 ---
 
 ### Billetterie
 
-| Méthode | Route | Description | Auth |
-|--------|--------|-------------|------|
-| GET | `/api/events/:eventId/ticket-types` | Types de billets | Non |
-| POST | `/api/events/:eventId/ticket-types` | Créer un type, body : `name`, `price`, `currency`, `quantity` | Oui (organisateur) |
-| POST | `/api/events/:eventId/tickets/purchase` | Acheter un billet (public), body : `ticketTypeId`, `buyerEmail`, `buyerFirstName`, `buyerLastName`, `buyerAddress` | Non |
-| GET | `/api/events/:eventId/tickets` | Billets vendus | Oui (organisateur) |
+| Méthode | Route | Description |
+|--------|--------|-------------|
+| `GET`  | `/api/events/:eventId/ticket-types` | Types de billets (accès public) |
+| `POST` | `/api/events/:eventId/ticket-types` | Créer un type — body : `name`, `price`, `currency`, `quantity` (organisateur) |
+| `POST` | `/api/events/:eventId/tickets/purchase` | Acheter un billet — body : `ticketTypeId`, `buyerEmail`, `buyerFirstName`, `buyerLastName`, `buyerAddress` (sans auth) |
+| `GET`  | `/api/events/:eventId/tickets` | Billets vendus (organisateur) |
 
 ---
 
-### Shopping list (bonus)
+### Liste de courses (bonus)
 
-| Méthode | Route | Description | Auth |
-|--------|--------|-------------|------|
-| GET | `/api/events/:eventId/shopping-items` | Liste des items | Oui (participant) |
-| POST | `/api/events/:eventId/shopping-items` | Ajouter un item, body : `name`, `quantity`, `arrivalTime` | Oui (participant) |
-| DELETE | `/api/shopping-items/:itemId` | Supprimer un item (créateur ou organisateur) | Oui |
+Disponible si `settings.shoppingListEnabled` est activé sur l’événement.
 
-À activer sur l’événement : `settings.shoppingListEnabled`.
+| Méthode | Route | Description |
+|--------|--------|-------------|
+| `GET`    | `/api/events/:eventId/shopping-items` | Liste des items (participants) |
+| `POST`   | `/api/events/:eventId/shopping-items` | Ajouter un item — body : `name`, `quantity`, `arrivalTime` |
+| `DELETE` | `/api/shopping-items/:itemId` | Supprimer un item (créateur de l’item ou organisateur) |
 
 ---
 
 ### Covoiturage (bonus)
 
-| Méthode | Route | Description | Auth |
-|--------|--------|-------------|------|
-| GET | `/api/events/:eventId/rides` | Trajets proposés | Oui (participant) |
-| POST | `/api/events/:eventId/rides` | Proposer un trajet, body : `departurePlace`, `departureTime`, `price`, `currency?`, `seatsAvailable`, `maxDetourMinutes` | Oui (participant) |
-| DELETE | `/api/rides/:rideId` | Supprimer un trajet (conducteur) | Oui |
-| GET | `/api/rides/:rideId/bookings` | Réservations du trajet | Oui |
-| POST | `/api/rides/:rideId/bookings` | Réserver une place | Oui (participant) |
-| DELETE | `/api/bookings/:bookingId` | Annuler une réservation | Oui |
+Disponible si `settings.carpoolingEnabled` est activé sur l’événement.
 
-À activer sur l’événement : `settings.carpoolingEnabled`.
+| Méthode | Route | Description |
+|--------|--------|-------------|
+| `GET`    | `/api/events/:eventId/rides` | Trajets proposés (participants) |
+| `POST`   | `/api/events/:eventId/rides` | Proposer un trajet — body : `departurePlace`, `departureTime`, `price`, `currency?`, `seatsAvailable`, `maxDetourMinutes` |
+| `DELETE` | `/api/rides/:rideId` | Supprimer un trajet (conducteur) |
+| `GET`    | `/api/rides/:rideId/bookings` | Réservations du trajet |
+| `POST`   | `/api/rides/:rideId/bookings` | Réserver une place (participant) |
+| `DELETE` | `/api/bookings/:bookingId` | Annuler une réservation (conducteur ou passager) |
 
 ---
 
 ## Structure du projet
 
+L’architecture suit une séparation en couches : **routes** → **contrôleurs** → **use-cases** → **repositories** → **modèles Mongoose**.
+
 ```
 src/
-├── config/           # env, db
-├── domain/           # entités métier
+├── config/                 # Configuration (env, connexion DB)
+│   ├── env.js              # Lecture PORT, MONGODB_URI, JWT_SECRET, JWT_EXPIRES_IN
+│   └── db.js
+├── domain/                 # Entités métier
+│   └── entities/
 ├── infrastructure/
-│   └── mongoose/     # modèles et repositories
+│   └── mongoose/
+│       ├── models/         # Schémas Mongoose (User, Group, Event, …)
+│       └── repositories/  # Accès aux données (CRUD, requêtes)
 ├── application/
-│   └── use-cases/    # cas d’usage (auth, groups, events, …)
+│   └── use-cases/          # Cas d’usage (auth, groups, events, albums, polls, …)
 ├── interfaces/http/
-│   ├── controllers/ # contrôleurs Express
-│   └── routes/       # définition des routes
-├── middlewares/      # auth JWT, autorisation, validation, erreurs
+│   ├── controllers/       # Contrôleurs Express (réponse HTTP)
+│   └── routes/            # Définition des routes et middlewares
+├── middlewares/            # Auth JWT, autorisation (rôles), gestion d’erreurs
 ├── validation/
-│   └── schemas/      # schémas Joi par ressource
-├── app.js
-└── server.js
+│   ├── schemas/            # Schémas Joi par ressource
+│   └── middlewares/       # Middleware de validation
+├── docs/                   # Spec OpenAPI (openapi.json)
+├── app.js                  # Application Express
+└── server.js               # Démarrage du serveur et connexion DB
 ```
 
 ---
 
-## Rendu attendu (rappels)
+## Rendu attendu
 
-- Respect des besoins fonctionnels du sujet.
-- Validators sur les entrées (Joi).
-- Collections MongoDB adaptées aux spécifications.
-- Code dans un repo Git ; lien à déposer sur Teams.
+Conformément au cahier des charges :
+
+- Respect des **besoins fonctionnels** de l’API.
+- **Validators** (Joi) sur les entrées lorsque c’est nécessaire.
+- **Collections MongoDB** adaptées aux spécifications (modèles dans `src/infrastructure/mongoose/models/`).
+- **Documentation** : ce README et, le cas échéant, la spec dans `src/docs/openapi.json`.
+- Code source dans un **dépôt Git** ; lien à déposer sur Teams.
 
 ---
 

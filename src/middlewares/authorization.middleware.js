@@ -68,6 +68,28 @@ async function requireEventParticipantForPoll(req, res, next) {
   return next();
 }
 
+// Même vérification quand la route expose pollId (ex: GET /polls/:pollId/results)
+async function requireEventParticipantByPollId(req, res, next) {
+  const { pollId } = req.params;
+  const userId = req.user?.id;
+
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const poll = await pollRepository.findPollById(pollId);
+  if (!poll) {
+    return res.status(404).json({ error: 'Poll not found' });
+  }
+
+  const participant = await eventParticipantRepository.findParticipant(poll.event.toString(), userId);
+  if (!participant) {
+    return res.status(403).json({ error: 'Forbidden: event participant required' });
+  }
+
+  return next();
+}
+
 // Organisateur OU le user lui-même (pour quitter l'événement)
 async function requireEventOrganizerOrSelf(req, res, next) {
   const eventId = req.params.eventId;
@@ -148,6 +170,26 @@ async function requireOrganizerByQuestionId(req, res, next) {
   return next();
 }
 
+// Organisateur de l'événement lié à l'option (route avec optionId)
+async function requireOrganizerByOptionId(req, res, next) {
+  const optionId = req.params.optionId;
+  const userId = req.user?.id;
+  if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+
+  const option = await pollRepository.findOptionById(optionId);
+  if (!option) return res.status(404).json({ error: 'Option not found' });
+
+  const question = await pollRepository.findQuestionById(option.question);
+  if (!question) return res.status(404).json({ error: 'Question not found' });
+
+  const poll = await pollRepository.findPollById(question.poll);
+  if (!poll) return res.status(404).json({ error: 'Poll not found' });
+
+  const isOrganizer = await eventParticipantRepository.isOrganizer(poll.event.toString(), userId);
+  if (!isOrganizer) return res.status(403).json({ error: 'Forbidden: event organizer required' });
+  return next();
+}
+
 // Membre du groupe (pour accès threads / contenu)
 async function requireGroupMember(req, res, next) {
   const groupId = req.params.groupId;
@@ -160,6 +202,52 @@ async function requireGroupMember(req, res, next) {
 }
 
 const threadRepository = require('../infrastructure/mongoose/repositories/thread.repository');
+const photoAlbumRepository = require('../infrastructure/mongoose/repositories/photo-album.repository');
+const photoRepository = require('../infrastructure/mongoose/repositories/photo.repository');
+const commentRepository = require('../infrastructure/mongoose/repositories/comment.repository');
+
+// Participant de l'événement lié à l'album (pour PATCH/DELETE album)
+async function requireAlbumEventParticipant(req, res, next) {
+  const { albumId } = req.params;
+  const userId = req.user?.id;
+  if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+
+  const album = await photoAlbumRepository.findById(albumId);
+  if (!album) return res.status(404).json({ error: 'Album not found' });
+
+  const participant = await eventParticipantRepository.findParticipant(album.event.toString(), userId);
+  if (!participant) return res.status(403).json({ error: 'Forbidden: event participant required' });
+  return next();
+}
+
+// Participant de l'événement lié à la photo (pour PATCH/DELETE photo)
+async function requirePhotoEventParticipant(req, res, next) {
+  const { photoId } = req.params;
+  const userId = req.user?.id;
+  if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+
+  const photo = await photoRepository.findById(photoId);
+  if (!photo) return res.status(404).json({ error: 'Photo not found' });
+
+  const participant = await eventParticipantRepository.findParticipant(photo.event.toString(), userId);
+  if (!participant) return res.status(403).json({ error: 'Forbidden: event participant required' });
+  return next();
+}
+
+// Auteur du commentaire (pour PATCH/DELETE commentaire)
+async function requireCommentAuthor(req, res, next) {
+  const { commentId } = req.params;
+  const userId = req.user?.id;
+  if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+
+  const comment = await commentRepository.findById(commentId);
+  if (!comment) return res.status(404).json({ error: 'Comment not found' });
+
+  if (comment.author.toString() !== userId) {
+    return res.status(403).json({ error: 'Forbidden: comment author only' });
+  }
+  return next();
+}
 
 // Accès au thread : participant de l'événement OU membre du groupe selon le type de thread
 async function requireThreadAccess(req, res, next) {
@@ -190,10 +278,15 @@ module.exports = {
   requireEventOrganizerOrSelf,
   requireEventParticipant,
   requireEventParticipantForPoll,
+  requireEventParticipantByPollId,
   requireCanCreateEventInGroup,
   requirePollOrganizer,
   requireOrganizerByQuestionId,
+  requireOrganizerByOptionId,
   requireGroupMember,
   requireThreadAccess,
+  requireAlbumEventParticipant,
+  requirePhotoEventParticipant,
+  requireCommentAuthor,
 };
 

@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const env = require('../../../config/env');
 const userRepository = require('../../../infrastructure/mongoose/repositories/user.repository');
 
+// Vérifie email + mot de passe et renvoie un JWT + les infos user
 async function loginUser(input) {
   const user = await userRepository.findByEmail(input.email);
   if (!user) {

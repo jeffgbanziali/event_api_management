@@ -1,3 +1,4 @@
+// Contrôleur sondages : création poll/questions/options, vote, résultats agrégés, CRUD (organisateur)
 const {
   createPollSchema,
   createQuestionSchema,

@@ -5,11 +5,14 @@ const groupsController = require('../controllers/groups.controller');
 
 const router = express.Router();
 
+// CRUD groupe : création et liste (auth), détail, modification/suppression (admin uniquement)
 router.post('/', authMiddleware, groupsController.validateCreateGroup, groupsController.create);
 router.get('/', authMiddleware, groupsController.list);
 router.get('/:groupId', authMiddleware, groupsController.getById);
 router.patch('/:groupId', authMiddleware, requireGroupAdmin, groupsController.validateUpdateGroup, groupsController.update);
 router.delete('/:groupId', authMiddleware, requireGroupAdmin, groupsController.deleteGroupHandler);
+
+// Membres : ajout/liste/retrait (admin ou soi-même pour quitter)
 
 router.post(
   '/:groupId/members',

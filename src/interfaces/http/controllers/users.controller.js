@@ -1,3 +1,4 @@
+// Contrôleur profil utilisateur : GET/PATCH /users/me (données du user connecté)
 const { validate } = require('../../../validation/middlewares/validate.middleware');
 const { updateProfileSchema } = require('../../../validation/schemas/user.validation');
 const { getMe } = require('../../../application/use-cases/users/get-me.usecase');

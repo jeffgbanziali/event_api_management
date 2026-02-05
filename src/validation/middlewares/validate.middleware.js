@@ -1,3 +1,4 @@
+// Retourne un middleware qui valide req.body (ou req[property]) avec un schéma Joi
 function validate(schema, property = 'body') {
   return (req, res, next) => {
     const data = req[property];
@@ -10,7 +11,7 @@ function validate(schema, property = 'body') {
       });
     }
 
-    req[property] = value;
+    req[property] = value; // on réinjecte les données nettoyées (stripUnknown)
     return next();
   };
 }

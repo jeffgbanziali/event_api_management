@@ -1,3 +1,4 @@
+// Contrôleur événements : création (standalone ou dans un groupe), liste, CRUD, participants
 const { validate } = require('../../../validation/middlewares/validate.middleware');
 const {
   createEventSchema,

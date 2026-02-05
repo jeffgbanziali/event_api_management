@@ -1,3 +1,4 @@
+// Accès base de données pour les événements (CRUD, liste public / visible pour un user)
 const EventModel = require('../models/event.model');
 const EventParticipantModel = require('../models/event-participant.model');
 

@@ -1,3 +1,4 @@
+// Accès base de données pour les groupes (CRUD, liste visible selon type et appartenance)
 const GroupModel = require('../models/group.model');
 const GroupMembershipModel = require('../models/group-membership.model');
 

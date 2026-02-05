@@ -1,3 +1,4 @@
+// Contrôleur threads (event ou groupe) et messages : création, liste, envoi de messages
 const { validate } = require('../../../validation/middlewares/validate.middleware');
 const { createThreadSchema, createMessageSchema } = require('../../../validation/schemas/thread.validation');
 const { createEventThread } = require('../../../application/use-cases/threads/create-event-thread.usecase');

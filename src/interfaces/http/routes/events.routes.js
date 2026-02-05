@@ -1,3 +1,4 @@
+// Routes événements : CRUD, création dans un groupe, participants (organisateur pour ajouter/retirer)
 const express = require('express');
 const { authMiddleware } = require('../../../middlewares/auth.middleware');
 const {

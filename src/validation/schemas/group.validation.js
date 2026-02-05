@@ -1,3 +1,4 @@
+// Schémas Joi pour les groupes (création, mise à jour, ajout membre, promotion admin)
 const Joi = require('joi');
 
 const createGroupSchema = Joi.object({

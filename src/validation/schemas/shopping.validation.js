@@ -1,3 +1,4 @@
+// Schéma Joi pour les items de la liste de courses
 const Joi = require('joi');
 
 const createShoppingItemSchema = Joi.object({

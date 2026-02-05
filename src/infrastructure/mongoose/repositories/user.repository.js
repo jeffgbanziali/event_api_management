@@ -1,3 +1,4 @@
+// Accès base de données pour les utilisateurs (findByEmail, create, update)
 const UserModel = require('../models/user.model');
 
 class UserRepository {

@@ -1,3 +1,4 @@
+// Schéma Joi pour la mise à jour du profil (firstName, lastName, avatarUrl)
 const Joi = require('joi');
 
 const updateProfileSchema = Joi.object({

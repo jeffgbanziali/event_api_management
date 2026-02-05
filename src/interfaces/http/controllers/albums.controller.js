@@ -1,3 +1,4 @@
+// Contrôleur albums / photos / commentaires : liés aux événements, droits participant ou auteur
 const {
   createAlbumSchema,
   uploadPhotoSchema,

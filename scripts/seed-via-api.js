@@ -12,8 +12,8 @@ require('dotenv').config();
 const BASE_URL = process.env.SEED_BASE_URL || process.env.BASE_URL || 'http://localhost:3000';
 const API = `${BASE_URL}/api`;
 
-const users = [];
-let tokens = {};
+const users = []; // liste des users créés ou connectés (id, email, etc.)
+let tokens = {};  // email -> accessToken pour les appels authentifiés
 
 async function request(method, path, body = null, token = null) {
   const url = path.startsWith('http') ? path : `${API}${path}`;
@@ -39,6 +39,7 @@ async function request(method, path, body = null, token = null) {
   return data;
 }
 
+// Les réponses API peuvent renvoyer id ou _id selon le modèle
 function id(obj) {
   if (!obj) return null;
   return obj.id ?? obj._id ?? null;

@@ -1,3 +1,4 @@
+// Schémas Joi pour albums, photos et commentaires
 const Joi = require('joi');
 
 const createAlbumSchema = Joi.object({

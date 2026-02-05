@@ -1,3 +1,4 @@
+// Schémas Joi pour threads et messages
 const Joi = require('joi');
 
 const createThreadSchema = Joi.object({

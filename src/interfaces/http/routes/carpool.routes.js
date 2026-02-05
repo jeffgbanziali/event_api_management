@@ -1,3 +1,4 @@
+// Routes covoiturage : trajets (participant), réservations, annulation (conducteur ou passager)
 const express = require('express');
 const { authMiddleware } = require('../../../middlewares/auth.middleware');
 const { requireEventParticipant } = require('../../../middlewares/authorization.middleware');

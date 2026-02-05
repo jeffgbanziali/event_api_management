@@ -1,3 +1,4 @@
+// Contrôleur billetterie : types de billets (CRUD), achat (ticketingEnabled + visibilité event)
 const { validate } = require('../../../validation/middlewares/validate.middleware');
 const {
   createTicketTypeSchema,

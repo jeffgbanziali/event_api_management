@@ -1,6 +1,7 @@
 const { registerUser } = require('../../../application/use-cases/auth/register-user.usecase');
 const { loginUser } = require('../../../application/use-cases/auth/login-user.usecase');
 
+// Inscription : le body est déjà validé par le middleware (registerSchema)
 async function register(req, res, next) {
   try {
     const result = await registerUser(req.body);
@@ -10,6 +11,7 @@ async function register(req, res, next) {
   }
 }
 
+// Connexion : renvoie accessToken + infos user
 async function login(req, res, next) {
   try {
     const result = await loginUser(req.body);

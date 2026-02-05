@@ -1,3 +1,4 @@
+// Schémas Joi pour les événements (création, mise à jour, ajout participant)
 const Joi = require('joi');
 
 const createEventSchema = Joi.object({

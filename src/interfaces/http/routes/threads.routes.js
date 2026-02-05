@@ -1,3 +1,4 @@
+// Routes threads (event ou groupe) et messages : accès selon participant event ou membre groupe
 const express = require('express');
 const { authMiddleware } = require('../../../middlewares/auth.middleware');
 const { requireEventParticipant, requireGroupMember, requireThreadAccess } = require('../../../middlewares/authorization.middleware');

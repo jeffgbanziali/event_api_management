@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const userRepository = require('../../../infrastructure/mongoose/repositories/user.repository');
 
+// Crée un utilisateur (email unique, mot de passe hashé)
 async function registerUser(input) {
   const existing = await userRepository.findByEmail(input.email);
   if (existing) {

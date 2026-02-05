@@ -5,6 +5,7 @@ const authController = require('../controllers/auth.controller');
 
 const router = express.Router();
 
+// Pas d'auth requise pour s'inscrire ou se connecter
 router.post('/register', validate(registerSchema), authController.register);
 router.post('/login', validate(loginSchema), authController.login);
 

@@ -1,3 +1,4 @@
+// Contrôleur liste de courses : ajout, liste, suppression d'items par événement (participant)
 const { validate } = require('../../../validation/middlewares/validate.middleware');
 const { createShoppingItemSchema } = require('../../../validation/schemas/shopping.validation');
 const { addShoppingItem } = require('../../../application/use-cases/shopping/add-shopping-item.usecase');

@@ -1,3 +1,4 @@
+// Routes liste de courses : ajout / liste / suppression par événement (participant)
 const express = require('express');
 const { authMiddleware } = require('../../../middlewares/auth.middleware');
 const { requireEventParticipant } = require('../../../middlewares/authorization.middleware');

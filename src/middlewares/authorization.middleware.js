@@ -1,3 +1,4 @@
+// Middlewares qui vérifient les droits (admin groupe, organisateur event, participant, etc.)
 const groupMembershipRepository = require('../infrastructure/mongoose/repositories/group-membership.repository');
 const eventParticipantRepository = require('../infrastructure/mongoose/repositories/event-participant.repository');
 const GroupModel = require('../infrastructure/mongoose/models/group.model');

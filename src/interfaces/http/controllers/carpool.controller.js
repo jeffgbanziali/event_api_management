@@ -1,3 +1,4 @@
+// Contrôleur covoiturage : créer un trajet, réserver une place, annuler, supprimer (participant / conducteur)
 const { validate } = require('../../../validation/middlewares/validate.middleware');
 const { createRideSchema } = require('../../../validation/schemas/carpool.validation');
 const { createRide } = require('../../../application/use-cases/carpool/create-ride.usecase');

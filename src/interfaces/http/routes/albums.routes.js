@@ -1,3 +1,4 @@
+// Routes albums, photos, commentaires : event (participant), photo (participant), comment (auteur)
 const express = require('express');
 const { authMiddleware } = require('../../../middlewares/auth.middleware');
 const {

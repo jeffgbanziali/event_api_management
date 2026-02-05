@@ -1,3 +1,4 @@
+// Schémas Joi pour l'inscription et la connexion
 const Joi = require('joi');
 
 const registerSchema = Joi.object({

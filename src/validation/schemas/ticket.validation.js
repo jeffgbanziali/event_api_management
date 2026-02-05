@@ -1,3 +1,4 @@
+// Schémas Joi pour types de billets et achat
 const Joi = require('joi');
 
 const createTicketTypeSchema = Joi.object({

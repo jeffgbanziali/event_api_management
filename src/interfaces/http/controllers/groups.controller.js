@@ -1,3 +1,4 @@
+// Contrôleur groupes : CRUD, membres, promotion/rétrogradation admin (visibilité public/private/secret)
 const { validate } = require('../../../validation/middlewares/validate.middleware');
 const {
   createGroupSchema,

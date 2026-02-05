@@ -9,13 +9,13 @@ const apiRouter = require('./interfaces/http/routes');
 
 const app = express();
 
-// Middlewares globaux
+// Sécurité (headers), CORS, logs des requêtes, body JSON
 app.use(helmet());
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 
-// Routes API
+// Toutes les routes métier sont préfixées par /api
 app.use('/api', apiRouter);
 
 // CSP assouplie pour la doc Swagger (scripts/style depuis unpkg + inline)

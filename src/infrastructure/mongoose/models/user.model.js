@@ -1,3 +1,4 @@
+// Modèle Mongoose User : email unique, passwordHash, firstName, lastName, avatarUrl
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema(

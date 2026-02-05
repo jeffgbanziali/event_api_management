@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const env = require('./env');
 
+// Connexion à MongoDB avant de lancer le serveur
 async function connectToDatabase() {
   try {
     await mongoose.connect(env.mongoUri);

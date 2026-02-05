@@ -1,3 +1,4 @@
+// Schéma Joi pour la création d'un trajet covoiturage
 const Joi = require('joi');
 
 const createRideSchema = Joi.object({

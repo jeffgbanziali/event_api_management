@@ -1,3 +1,4 @@
+// Schémas Joi pour sondages (création, questions, options, vote)
 const Joi = require('joi');
 
 const createPollSchema = Joi.object({

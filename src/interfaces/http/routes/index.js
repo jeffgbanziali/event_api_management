@@ -12,10 +12,12 @@ const usersRoutes = require('./users.routes');
 
 const router = express.Router();
 
+// Montage des sous-routeurs (auth, users, groups, etc.)
 router.use('/auth', authRoutes);
 router.use('/users', usersRoutes);
 router.use('/groups', groupRoutes);
 router.use('/events', eventRoutes);
+// threads, albums, polls, tickets, shopping, carpool sont à la racine (/api/...)
 router.use('/', threadRoutes);
 router.use('/', albumRoutes);
 router.use('/', pollRoutes);

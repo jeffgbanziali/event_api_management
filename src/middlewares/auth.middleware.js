@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const env = require('../config/env');
 
+// Vérifie le JWT dans Authorization: Bearer <token> et met req.user (id, email)
 function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization || '';
   const [, token] = authHeader.split(' ');

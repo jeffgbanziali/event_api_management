@@ -1,3 +1,4 @@
+// Routes sondages : création (organisateur), liste/vote/résultats (participant), CRUD question/option (organisateur)
 const express = require('express');
 const { authMiddleware } = require('../../../middlewares/auth.middleware');
 const {

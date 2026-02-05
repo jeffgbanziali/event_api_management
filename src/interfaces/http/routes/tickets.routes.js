@@ -1,3 +1,4 @@
+// Routes billetterie : types de billets (organisateur), achat (auth optionnelle pour events privés)
 const express = require('express');
 const { authMiddleware, optionalAuthMiddleware } = require('../../../middlewares/auth.middleware');
 const { requireEventOrganizer } = require('../../../middlewares/authorization.middleware');

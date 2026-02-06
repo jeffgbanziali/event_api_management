@@ -89,7 +89,7 @@ JWT_EXPIRES_IN=15m
   `MONGODB_URI=mongodb://localhost:27017/my-social-networks`
 
 - Pour **MongoDB Atlas** :  
-  utilise l’URI fournie par ton cluster (format `mongodb+srv://...`).  
+  Utilisez l’URI fournie par notre cluster (format `mongodb+srv://Jeffflaj:Koukouda16@jeff.0lid4ok.mongodb.net/event_database`).  
   Ne partage pas ce fichier ni ne le commite : `.env` doit rester dans `.gitignore`.
 
 Si une variable manque, l’application utilise les valeurs par défaut définies dans `src/config/env.js`.
@@ -150,13 +150,13 @@ La réponse de **login** contient `accessToken` et `user`. Utilise `accessToken`
 
 ## Documentation des endpoints
 
-**Documentation interactive (Swagger UI)**  
+**Documentation interactive (Postman)**  
 Une fois l’API lancée (`npm start` ou `npm run dev`), ouvre dans ton navigateur :
 
-- **Doc interactive :** [http://localhost:3000/api-docs](http://localhost:3000/api-docs)  
-  (remplace `3000` par la valeur de `PORT` dans ton `.env` si tu as changé le port)
+- **Doc interactive :** [https://documenter.getpostman.com/view/18766243/2sBXc8pPTG](https://documenter.getpostman.com/view/18766243/2sBXc8pPTG)  
+  (remplacez `3000` par la valeur de `PORT` dans votre `.env` si vous as changé le port)
 
-Tu y trouveras tous les endpoints (dont résultats des sondages, PATCH/DELETE albums, photos, commentaires, sondages, types de billets), les paramètres attendus et la possibilité d’exécuter des requêtes de test. La spécification OpenAPI brute est aussi disponible en JSON : `GET http://localhost:3000/api-docs.json`.
+Vous y trouveras tous les endpoints (dont résultats des sondages, PATCH/DELETE albums, photos, commentaires, sondages, types de billets), les paramètres attendus et la possibilité d’exécuter des requêtes de test. La spécification OpenAPI brute est aussi disponible en JSON : `GET http://localhost:3000/api-docs.json`.
 
 ---
 
@@ -317,20 +317,6 @@ src/
 ├── app.js                  # Application Express
 └── server.js               # Démarrage du serveur et connexion DB
 ```
-
----
-
-## Rendu attendu
-
-Conformément au cahier des charges :
-
-- Respect des **besoins fonctionnels** de l’API.
-- **Validators** (Joi) sur les entrées lorsque c’est nécessaire.
-- **Collections MongoDB** adaptées aux spécifications (modèles dans `src/infrastructure/mongoose/models/`).
-- **Documentation** : ce README et, le cas échéant, la spec dans `src/docs/openapi.json`.
-- Code source dans un **dépôt Git** ; lien à déposer sur Teams.
-
----
 
 ## Licence
 

@@ -1,4 +1,6 @@
-# My Social Networks API
+# My Social Networks API 
+
+# Jeff GBANZIALI
 
 > API REST inspirée de Facebook — groupes, événements, fils de discussion, albums photo, sondages, billetterie, liste de courses et covoiturage.
 
